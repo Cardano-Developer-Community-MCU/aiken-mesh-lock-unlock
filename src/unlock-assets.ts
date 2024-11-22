@@ -59,9 +59,11 @@ const message = "Hello, World!";
 // Membuat draft transaksi
 const txBuild = new MeshTxBuilder({
   fetcher: nodeProvider,
-  submitter: nodeProvider,
+  evaluator: nodeProvider,
+  verbose: true,
 });
 const txDraft = await txBuild
+  .setNetwork("preprod")
   .spendingPlutusScript("V3")
   .txIn(
     utxo.input.txHash,

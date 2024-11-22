@@ -12,6 +12,9 @@ import { applyParamsToScript } from "@meshsdk/core-csl";
 import dotenv from "dotenv";
 dotenv.config();
 
+// Menentukan jumlah asset yang akan di depositkan atau dikunci, satuan dalam Lovelace
+const quantity = "177000000";
+
 // Integrasi smart-contract
 import contractBlueprint from "../aiken-workspace/plutus.json";
 
@@ -45,14 +48,16 @@ const { utxos, walletAddress } = await getWalletInfo();
 const signerHash = deserializeAddress(walletAddress).pubKeyHash;
 
 // Menentukan jumlah aset yang akan di kunci
-const assets: Asset[] = [{ unit: "lovelace", quantity: "1000000000" }];
+const assets: Asset[] = [{ unit: "lovelace", quantity: quantity }];
 
 // Membuat draft transaksi
 const txBuild = new MeshTxBuilder({
   fetcher: nodeProvider,
-  submitter: nodeProvider,
+  evaluator: nodeProvider,
+  verbose: true,
 });
 const txDraft = await txBuild
+  .setNetwork("preprod")
   .txOut(scriptAddr, assets)
   .txOutDatumHashValue(mConStr0([signerHash]))
   .changeAddress(walletAddress)
